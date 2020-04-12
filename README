@@ -3,3 +3,17 @@
 A wrapper library for nanomsg (https://nanomsg.org/) and nng (https://nng.nanomsg.org/).
 
 LICENSE : MIT License
+
+## TODO
+- [] License
+- [] basic library
+- [] Examples
+- [] Julia Module
+
+- For both nng and nanomsg wrappers to get the exmaples working
+- [] Pipeline (A One-Way Pipe)
+- [] Request/Reply (I ask, you answer)
+- [] Pair (Two Way Radio)
+- [] Pub/Sub (Topics & Broadcast)
+- [] Survey (Everybody Votes)
+- [] Bus (Routing)
