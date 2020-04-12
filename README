@@ -1,0 +1,5 @@
+# NNG.jl
+
+A wrapper library for nanomsg (https://nanomsg.org/) and nng (https://nng.nanomsg.org/).
+
+LICENSE : MIT License
