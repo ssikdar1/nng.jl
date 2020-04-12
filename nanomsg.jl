@@ -1,4 +1,3 @@
-
 """
 Support for nanomsg library
 """
@@ -10,6 +9,7 @@ function nn_strerror(errno::Int32)
     end
     return unsafe_string(err)
 end
+nn_strerror(errno::Int64) = nn_strerror(Int32(errno))
 
 function nn_errno()
     return ccall((:nn_errno, "libnanomsg"), Int32, ())
@@ -33,12 +33,46 @@ function nn_socket(protocol; raw=false)
     return fd
 end
 
+"""
+    nn_bind(s, addr)
+
+Bind local endpoint to socket s.
+
+Returns positive endpoint ID, else -1 for failure.
+"""
+function nn_bind(s, addr)
+    rv = ccall((:nn_bind, "libnanomsg"), Int32, (Int32, Ptr{UInt8}), s, "ipc:///tmp/pipeline.ipc")
+    if rv < 0
+        err = nn_strerror(nn_errno())
+        error("nn_bind: ", err)
+    end
+    return s
+end
+
+function nn_shutdown(s, endpoint_id)
+    rv = ccall((:nn_shutdown, "libnanomsg"), Int32, (Int32, Int32), s, endpoint_id)
+    if rv < 0
+        err = nn_strerror(nn_errno())
+        error("nn_shutdown:", err)
+    end
+    return rv
+end
+
 # Pipeline example
 # NN_PROTO_PIPELINE 5
 #define NN_PUSH (NN_PROTO_PIPELINE * 16 + 0)
-println(nn_socket(5 * 16 + 0))
-println(nn_socket(5 * 16 + 0))
-println(nn_socket(5 * 16 + 0))
+
+#TODO fails if i dont call socket twice?
+s = nn_socket(5 * 16 + 0)
+s = nn_socket(5 * 16 + 0)
+println(s)
+url = "ipc://tmp/pipeline.ipc"
+endpoint = nn_bind(s, url)
+
+# TODO
+# nn_send
+
+println(nn_shutdown(s, endpoint))
 
 # test error
 #println(nn_socket(16 * 16 + 0))
