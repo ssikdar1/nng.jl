@@ -41,12 +41,23 @@ Bind local endpoint to socket s.
 Returns positive endpoint ID, else -1 for failure.
 """
 function nn_bind(s, addr)
-    rv = ccall((:nn_bind, "libnanomsg"), Int32, (Int32, Ptr{UInt8}), s, "ipc:///tmp/pipeline.ipc")
+    rv = ccall((:nn_bind, "libnanomsg"), Int32, (Int32, Ptr{UInt8}), s, addr)
     if rv < 0
         err = nn_strerror(nn_errno())
         error("nn_bind: ", err)
     end
     return s
+end
+
+function nn_recv(s ; blocking=true)
+    flags = blocking ? 0 : 1 # NN_DONTWAIT=1
+    msg = Vector{UInt8}(undef, sizeof(Csize_t))
+    rv = ccall((:nn_recv, "libnanomsg"), Int32, (Int32, Ptr{UInt8}, Csize_t, Int32), s, msg, sizeof(msg), flags)
+    if rv < 0
+        err = nn_strerror(nn_errno())
+        error("nn_recv: ", err)
+    end
+    return unsafe_string(pointer(msg))
 end
 
 function nn_shutdown(s, endpoint_id)
@@ -59,20 +70,18 @@ function nn_shutdown(s, endpoint_id)
 end
 
 # Pipeline example
-# NN_PROTO_PIPELINE 5
-#define NN_PUSH (NN_PROTO_PIPELINE * 16 + 0)
 
-#TODO fails if i dont call socket twice?
-s = nn_socket(5 * 16 + 0)
-s = nn_socket(5 * 16 + 0)
-println(s)
-url = "ipc://tmp/pipeline.ipc"
-endpoint = nn_bind(s, url)
+function node0()
+    url = "ipc:///tmp/pipeline.ipc"
+    # NN_PROTO_PIPELINE 5
+    #define NN_PULL (NN_PROTO_PIPELINE * 16 + 1)
+    s = nn_socket(5 * 16 + 1)
+    println(s)
+    endpoint = nn_bind(s, url)
+    while true
+        msg = nn_recv(s)
+        println("NODE0: RECEIVED", msg)
+    end
+end
 
-# TODO
-# nn_send
-
-println(nn_shutdown(s, endpoint))
-
-# test error
-#println(nn_socket(16 * 16 + 0))
+node0()
