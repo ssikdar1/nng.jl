@@ -64,16 +64,19 @@ end
 function nn_recv(s ; blocking=true)
     # define NN_MSG ((size_t) -1)
     flags = blocking ? 0 : 1 # NN_DONTWAIT=1
-    buf = Vector{UInt8}(undef, 8)
-    rv = ccall((:nn_recv, "libnanomsg"), Int32, (Int32, Ptr{UInt8}, Csize_t, Int32), s, buf, sizeof(buf), flags)
-    #rv = ccall((:nn_recv, "libnanomsg"), Int32, (Int32, Ptr{UInt8}, Csize_t, Int32), s, buf, typemax(Csize_t), flags)
-
-    if rv < 0
+    buf = Vector{Ptr{Cchar}}(undef,1)
+    bytes = ccall(
+        (:nn_recv, "libnanomsg"),
+        Int32,
+        (Cint, Ptr{Cchar}, Csize_t, Cint),
+        s, pointer(buf), typemax(Csize_t), flags)
+    if bytes < 0
         err = nn_strerror(nn_errno())
         error("nn_recv: ", err)
     end
-    @show unsafe_string(pointer(buf))
-    return buf
+    msg = unsafe_string(buf[1])
+    ccall((:nn_freemsg, "libnanomsg"), Cint, (Ptr{Cchar},), buf[1])
+    return msg
 end
 
 function nn_send(sock, msg; blocking=true)
@@ -121,5 +124,5 @@ function node1(url, msg)
     nn_send(sock, msg)
 end
 
-#node0()
+node0()
 node1("ipc:///tmp/pipeline.ipc", "hello, world its me")
