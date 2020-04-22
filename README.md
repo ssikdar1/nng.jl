@@ -1,8 +1,7 @@
 # NNG.jl
 
 Wrapper julia libraries for nanomsg (https://nanomsg.org/) and nng (https://nng.nanomsg.org/).
-
-LICENSE : MIT License
+Mainly as a learning excercise for myself.
 
 # Setup
 
@@ -34,7 +33,6 @@ julia> ENV["DYLD_LIBRARY_PATH"]
 # Examples
 
 ## TODO
-- [] License
 - [] basic library
 - [] Examples
 - [] Julia Module
@@ -46,3 +44,6 @@ julia> ENV["DYLD_LIBRARY_PATH"]
 - [] Pub/Sub (Topics & Broadcast)
 - [] Survey (Everybody Votes)
 - [] Bus (Routing)
+
+# LICENSE
+Keeping in spirit with both nng and nanomsg this project is  licensed under the MIT License.
