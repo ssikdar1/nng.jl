@@ -3,9 +3,9 @@
 Wrapper julia libraries for nanomsg (https://nanomsg.org/) and nng (https://nng.nanomsg.org/).
 Mainly as a learning excercise for myself.
 
-# Setup
+## Setup
 
-# Building libraries
+### Building libraries
 
 ### nng
 You can find the nng github repository [here](https://github.com/nanomsg/nng).
@@ -15,10 +15,10 @@ add `-DBUILD_SHARED_LIBS=ON ` to the CMake command:
 cmake -DBUILD_SHARED_LIBS=ON  -G Ninja ..
 ```
 
-### Nanomsg
+#### Nanomsg
 The Nanomsg library can be found [here](https://github.com/nanomsg/nanomsg).
 
-## Linking
+### Linking
 For julia to be able to load the dynamic library, the `DYLD_LIBRARY_PATH` enviroment variable must be set to the location of the `dylib`s.
 For example on Mac:
 ```
@@ -30,7 +30,7 @@ julia> ENV["DYLD_LIBRARY_PATH"]
 "/usr/local/lib/libnanomsg.dylib: /usr/local/lib/libnng.dylib"
 ```
 
-# Examples
+## Examples
 
 ## TODO
 - [] basic library
